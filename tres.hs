@@ -13,3 +13,9 @@ procesarRetiro idCuenta cantidad =
 calcularInteres idCuenta =
     obtenerSaldo idCuenta >>= \saldo ->
     return (saldo + saldo `div` 10)
+
+sumarSaldos :: Maybe Int -> Maybe Int -> Maybe Int
+sumarSaldos = \mx my ->    
+    mx >>= \x ->
+    my >>= \y ->
+    return (x + y)
