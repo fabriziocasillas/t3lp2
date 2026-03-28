@@ -1,3 +1,10 @@
+-- |
+-- Tarea 3
+--
+-- @author: Marin Gallegos Arvin Isaac
+-- @author: Pimentel Casillas Fabrizio
+--
+
 import Prelude hiding (Eq, Ord, minimum)
 
 
@@ -66,3 +73,52 @@ estaOrdenada = \dict xs ->
     [_] -> True
     (x:y:ys) ->
       leq dict x y && estaOrdenada dict (y:ys)
+
+-- 4.
+data HashableDict a = HashableDict
+  { hash    :: a -> Int
+  , eqDictH :: EqDict a
+  }
+
+-- INSERT
+insert :: HashableDict k -> k -> v -> HashMap k v -> HashMap k v
+insert dict k v m =
+  let index = hash dict k
+      (before, bucket:after) = splitAt index m
+      newBucket = (k, v) : bucket
+  in before ++ (newBucket : after)
+
+-- LOOKUP
+lookup' :: HashableDict k -> k -> HashMap k v -> Maybe v
+lookup' dict k m =
+  let index = hash dict k
+      bucket = m !! index
+      eqF = eq (eqDictH dict)
+  in buscar eqF k bucket
+  where
+    buscar _ _ [] = Nothing
+    buscar eqF k ((k', v):xs) =
+      if eqF k k'
+      then Just v
+      else buscar eqF k xs
+
+integerMod :: Int -> Int -> Int
+integerMod = mod
+
+hashableIntDict :: HashableDict Int
+hashableIntDict = HashableDict
+  { hash = \x -> integerMod x 7
+  , eqDictH = EqDict { eq = integerEq }
+  }
+
+
+type Bucket k v = [(k, v)]
+type HashMap k v = [Bucket k v]
+
+emptyMap :: HashMap k v
+emptyMap = replicate 7 []
+
+test :: Maybe String
+test =
+  let m1 = insert hashableIntDict 42 "cuarenta y dos" emptyMap
+  in lookup' hashableIntDict 42 m1
