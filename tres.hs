@@ -32,12 +32,11 @@ sumarSaldos = \mx my ->
 
 
 
---record de eqDict
+
 data EqDict a = EqDict
   { eq :: a -> a -> Bool
   }
 
---record de ordict
 data OrdDict a = OrdDict
   { leq    :: a -> a -> Bool
   , eqDict :: EqDict a
@@ -54,7 +53,6 @@ ordIntDict = OrdDict
   , eqDict = eqIntDict
   }
 
--- Devuelve el minimo de una lista no vacia
 minimum :: OrdDict a -> [a] -> a
 minimum = \dict xs ->
   case xs of
@@ -65,7 +63,6 @@ minimum = \dict xs ->
 
 
 
--- Verifica si una lista esta ordenada
 estaOrdenada :: OrdDict a -> [a] -> Bool
 estaOrdenada = \dict xs ->
   case xs of
@@ -74,13 +71,11 @@ estaOrdenada = \dict xs ->
     (x:y:ys) ->
       leq dict x y && estaOrdenada dict (y:ys)
 
--- 4.
 data HashableDict a = HashableDict
   { hash    :: a -> Int
   , eqDictH :: EqDict a
   }
 
--- INSERT
 insert :: HashableDict k -> k -> v -> HashMap k v -> HashMap k v
 insert dict k v m =
   let index = hash dict k
@@ -88,7 +83,6 @@ insert dict k v m =
       newBucket = (k, v) : bucket
   in before ++ (newBucket : after)
 
--- LOOKUP
 lookup' :: HashableDict k -> k -> HashMap k v -> Maybe v
 lookup' dict k m =
   let index = hash dict k
